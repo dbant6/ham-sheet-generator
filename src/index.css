@@ -1,0 +1,313 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -------------------------------------------------------------------------- */
+/*  Global, senior-friendly base                                              */
+/* -------------------------------------------------------------------------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  /* Make focus visible & generous — critical for low-vision users */
+  :where(input, select, textarea, button, a):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(58, 90, 125, 0.28);
+    border-color: #1e3a5f;
+  }
+  /* Larger checkboxes/radios */
+  input[type='checkbox'],
+  input[type='radio'] {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: #1e3a5f;
+  }
+  /* Reduce motion respectfully */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .field-label {
+    @apply block text-lg font-semibold text-ink mb-1.5;
+  }
+  .field-help {
+    @apply block text-base text-ink-muted mb-2 leading-snug;
+  }
+  .field-input {
+    @apply block w-full rounded-xl border border-paper-edge bg-white
+           px-4 py-3.5 text-lg text-ink placeholder:text-ink-muted/60
+           transition-colors duration-150
+           hover:border-navy-200 focus:border-navy-700;
+  }
+  .field-textarea {
+    @apply field-input min-h-[7.5rem] leading-relaxed resize-y;
+  }
+  .field-select {
+    @apply field-input pr-10 appearance-none bg-no-repeat;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%231e3a5f'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.04l3.71-3.81a.75.75 0 111.08 1.04l-4.25 4.36a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-position: right 0.875rem center;
+    background-size: 1.25rem;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2
+           rounded-xl px-6 py-3.5 text-lg font-semibold
+           transition-all duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-navy-700 text-white shadow-card
+           hover:bg-navy-800 active:translate-y-px;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-navy-700 border border-paper-edge
+           hover:bg-paper hover:border-navy-200;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-ink-soft hover:bg-paper-edge/40;
+  }
+  .btn-danger-ghost {
+    @apply btn bg-transparent text-alert-600 hover:bg-alert-50;
+  }
+  .card {
+    @apply bg-paper-card rounded-xl2 shadow-card border border-paper-edge/60 p-5 sm:p-7 lg:p-9;
+  }
+}
+
+/* On true narrow screens (≤380px), tighten outer paddings and the alert padding */
+@media (max-width: 380px) {
+  .card {
+    border-radius: 1rem;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Printable HAM Sheet — 8.5" x 11" rendered for html2pdf & window.print()    */
+/*                                                                            */
+/*  Section color system: each block carries a soft accent — watercolor wash, */
+/*  not industrial color-blocking. Body text stays near-black so the sheet    */
+/*  remains paramedic-legible even on a black-and-white printer.              */
+/* -------------------------------------------------------------------------- */
+.ham-sheet {
+  /* Use exact letter dimensions; html2pdf will scale to fit. */
+  width: 8.5in;
+  min-height: 11in;
+  padding: 0.45in 0.5in;
+  background: #fefefe;
+  color: #111111;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.35;
+  box-sizing: border-box;
+  /* WebKit/Blink: force background colors to print */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.ham-sheet h1,
+.ham-sheet h2,
+.ham-sheet h3 {
+  margin: 0;
+  line-height: 1.15;
+}
+
+/* ----- HEADER -------------------------------------------------------------- */
+.ham-sheet .hs-header {
+  text-align: center;
+  border-bottom: 3px solid #1e3a5f;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.55rem;
+}
+.ham-sheet .hs-header h1 {
+  font-size: 21pt;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #1e3a5f;
+}
+.ham-sheet .hs-header .hs-sub {
+  font-size: 9.5pt;
+  color: #555;
+  margin-top: 2px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ----- PATIENT (navy) ------------------------------------------------------ */
+.ham-sheet .hs-patient {
+  background: #f1f5fa;
+  border-left: 5px solid #1e3a5f;
+  border-radius: 0 8px 8px 0;
+  padding: 9px 12px;
+  margin-bottom: 0.5rem;
+}
+.ham-sheet .hs-patient-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 0.3rem 1.2rem;
+  font-size: 11pt;
+}
+.ham-sheet .hs-patient-row .label {
+  font-weight: 700;
+  color: #1e3a5f;
+}
+
+/* ----- CRITICAL ALERTS (red — always loudest) ----------------------------- */
+.ham-sheet .hs-critical {
+  background: #fdf2f0;
+  border: 2px solid #bf3232;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+.ham-sheet .hs-critical::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(191, 50, 50, 0.18);
+}
+.ham-sheet .hs-critical h2 {
+  font-size: 13pt;
+  color: #a02828;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.ham-sheet .hs-critical-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 18px;
+  font-size: 11pt;
+}
+.ham-sheet .hs-critical-grid .label {
+  color: #a02828;
+  font-weight: 700;
+}
+.ham-sheet .hs-critical .allergies-row {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #d99494;
+}
+
+/* ----- GENERIC SECTION shell ---------------------------------------------- */
+.ham-sheet .hs-section {
+  margin-top: 0.45rem;
+  border-radius: 0 8px 8px 0;
+  padding: 8px 12px 9px;
+  border-left: 5px solid var(--accent, #1e3a5f);
+  background: var(--accent-tint, #f1f5fa);
+}
+.ham-sheet .hs-section h2 {
+  font-size: 11.5pt;
+  font-weight: 800;
+  color: var(--accent-ink, #1e3a5f);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1.5px solid var(--accent-line, #c9d6e6);
+  padding-bottom: 2px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.ham-sheet .hs-section h2 .hs-emoji {
+  font-size: 12pt;
+}
+.ham-sheet .hs-section .hs-body {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: #131313;
+}
+
+/* Per-section accent variables — set on the section's root */
+.ham-sheet .hs-section.is-meds {
+  --accent: #6a3d8a;
+  --accent-ink: #5a2d7a;
+  --accent-tint: #f6f1fa;
+  --accent-line: #d8c5e6;
+}
+.ham-sheet .hs-section.is-history {
+  --accent: #2f7a73;
+  --accent-ink: #1f5e58;
+  --accent-tint: #eff7f5;
+  --accent-line: #bcdcd6;
+}
+.ham-sheet .hs-section.is-contacts {
+  --accent: #a96d22;
+  --accent-ink: #80531a;
+  --accent-tint: #fbf4e7;
+  --accent-line: #e6d2ad;
+}
+
+/* ----- FOOTER (QR) -------------------------------------------------------- */
+.ham-sheet .hs-footer {
+  margin-top: 0.5rem;
+  border-top: 2px dashed #1e3a5f;
+  padding-top: 0.4rem;
+  display: grid;
+  grid-template-columns: 1fr 1.55in;
+  gap: 0.7rem;
+  align-items: center;
+}
+.ham-sheet .hs-footer .qr-label {
+  font-size: 9pt;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: #1e3a5f;
+}
+.ham-sheet .hs-footer .qr-help {
+  font-size: 9.5pt;
+  color: #444;
+  margin-top: 3px;
+}
+.ham-sheet .hs-footer .qr-stamp {
+  font-size: 8pt;
+  color: #777;
+  margin-top: 8px;
+}
+.ham-sheet .hs-footer .qr-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* When printing via window.print() — strip outer chrome */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .ham-sheet,
+  .ham-sheet * {
+    visibility: visible;
+  }
+  .ham-sheet {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    box-shadow: none;
+  }
+  @page {
+    size: letter;
+    margin: 0;
+  }
+}
