@@ -27,11 +27,9 @@ jobs:
 
       - run: npm ci
 
-      # Auto-detect base path for project pages: "/<repo-name>/".
-      # For user/organization pages (user.github.io), leave VITE_BASE unset
-      # by clearing it in the next step.
+      # Custom domain at root — base path is just "/".
       - name: Configure base path
-        run: echo "VITE_BASE=/${GITHUB_REPOSITORY#*/}/" >> $GITHUB_ENV
+        run: echo "VITE_BASE=/" >> $GITHUB_ENV
 
       - run: npm run build
 
