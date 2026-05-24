@@ -4,7 +4,7 @@ export default function StepHistory({ data, errors, set }) {
   return (
     <div className="space-y-7">
       <header>
-        <h2 className="text-2xl sm:text-3xl font-bold text-navy-700">History &amp; Medications</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: '#1f5e58' }}>History &amp; Medications</h2>
         <p className="text-ink-muted mt-1">Be thorough — one drug interaction or missed condition can matter a lot. If a section truly doesn't apply, type "None".</p>
       </header>
 

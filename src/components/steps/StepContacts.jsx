@@ -4,7 +4,7 @@ export default function StepContacts({ data, errors, set }) {
   return (
     <div className="space-y-7">
       <header>
-        <h2 className="text-2xl sm:text-3xl font-bold text-navy-700">Contacts &amp; Notes</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold" style={{ color: '#80531a' }}>Contacts &amp; Notes</h2>
         <p className="text-ink-muted mt-1">Who should responders call, and what else should they know?</p>
       </header>
 

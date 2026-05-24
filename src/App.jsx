@@ -12,6 +12,15 @@ import StepReview from './components/steps/StepReview.jsx'
 
 const STEP_COMPONENTS = [StepPatient, StepAlerts, StepHistory, StepContacts, StepReview]
 
+// Left-rail accent colors matching PDF section colors
+const STEP_THEMES = [
+  { border: '#1e3a5f' }, // Patient  → navy
+  { border: '#bf3232' }, // Alerts   → red
+  { border: '#2f7a73' }, // History  → teal
+  { border: '#a96d22' }, // Contacts → amber
+  { border: '#1e3a5f' }, // Review   → navy
+]
+
 export default function App() {
   const { state, dispatch } = useForm()
   const { step, data, errors, persist } = state
@@ -67,6 +76,7 @@ export default function App() {
 
   const isLastStep = step === STEPS.length - 1
   const formRef = useRef(null)
+  const theme = STEP_THEMES[step] ?? STEP_THEMES[0]
 
   function scrollToForm() {
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -76,11 +86,15 @@ export default function App() {
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-3xl px-4 sm:px-8 py-7 sm:py-12">
+      {step === 0 && (
+        <div className="bg-paper-card border-b border-paper-edge">
+          <div className="mx-auto w-full max-w-3xl px-4 sm:px-8">
+            <HeroSection onGetStarted={scrollToForm} />
+          </div>
+        </div>
+      )}
 
-        {step === 0 && (
-          <HeroSection onGetStarted={scrollToForm} />
-        )}
+      <main className="flex-1 mx-auto w-full max-w-3xl px-4 sm:px-8 py-7 sm:py-12">
 
         <PrivacyBanner
           persist={persist}
@@ -95,6 +109,7 @@ export default function App() {
           ref={formRef}
           onSubmit={(e) => { e.preventDefault(); goNext() }}
           className="card"
+          style={{ borderLeftColor: theme.border, borderLeftWidth: '5px' }}
           noValidate
         >
           <StepComponent data={data} errors={errors} set={set} onJump={jumpTo} />
@@ -161,7 +176,7 @@ function HeroSection({ onGetStarted }) {
   }
 
   return (
-    <section className="text-center pt-2 pb-10 sm:pb-14">
+    <section className="text-center pt-8 sm:pt-12 pb-10 sm:pb-14">
       <h2 className="text-3xl sm:text-4xl font-bold text-navy-800 tracking-tight leading-tight">
         Your medical info, ready when it matters.
       </h2>

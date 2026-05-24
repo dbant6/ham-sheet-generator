@@ -8,7 +8,7 @@ export default function StepAlerts({ data, errors, set }) {
   return (
     <div className="space-y-7">
       <header>
-        <h2 className="text-2xl sm:text-3xl font-bold text-navy-700">Critical Alerts</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-alert-700">Critical Alerts</h2>
         <p className="text-ink-muted mt-1">These are the first things paramedics check. We highlight them at the top of your sheet in a red callout.</p>
       </header>
 
