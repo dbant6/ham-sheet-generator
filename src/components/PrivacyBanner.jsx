@@ -1,9 +1,37 @@
 /**
- * The first thing the user sees. We lead with the privacy promise because
- * everything else in the app rests on it — and because seniors are right to
- * be cautious about typing medical data into a website.
+ * Privacy assurance + optional localStorage toggle.
+ *
+ * compact=true  — used on step 0, where the hero already covers the privacy
+ *                 promise. Shows just the toggle as a small pill row.
+ * compact=false — full card with explanation; shown on all other steps where
+ *                 the hero isn't present and the banner is the first thing seen.
  */
-export default function PrivacyBanner({ persist, onTogglePersist, onReset }) {
+export default function PrivacyBanner({ persist, onTogglePersist, onReset, compact = false }) {
+  if (compact) {
+    return (
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-7 px-1 text-sm text-ink-muted">
+        <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={persist}
+            onChange={(e) => onTogglePersist(e.target.checked)}
+            className="!w-4 !h-4"
+          />
+          <span>Save my progress on this device</span>
+        </label>
+        {persist && (
+          <button
+            type="button"
+            onClick={onReset}
+            className="text-alert-700 underline underline-offset-4 hover:text-alert-600 font-medium"
+          >
+            Clear everything
+          </button>
+        )}
+      </div>
+    )
+  }
+
   return (
     <section
       aria-label="Privacy"

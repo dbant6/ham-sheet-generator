@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from './state/FormContext.jsx'
+import { extractFormDataFromFile } from './utils/extract.js'
 import { STEPS, validateStep } from './utils/validation.js'
 import Stepper from './components/Stepper.jsx'
 import PrivacyBanner from './components/PrivacyBanner.jsx'
@@ -64,23 +65,34 @@ export default function App() {
     dispatch({ type: 'set_persist', value: v })
   }
 
-  // Show keyboard hint to power users (Enter goes forward in single-field steps)
   const isLastStep = step === STEPS.length - 1
+  const formRef = useRef(null)
+
+  function scrollToForm() {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
       <main className="flex-1 mx-auto w-full max-w-3xl px-4 sm:px-8 py-7 sm:py-12">
+
+        {step === 0 && (
+          <HeroSection onGetStarted={scrollToForm} />
+        )}
+
         <PrivacyBanner
           persist={persist}
           onTogglePersist={togglePersist}
           onReset={reset}
+          compact={step === 0}
         />
 
         <Stepper current={step} onJump={jumpTo} />
 
         <form
+          ref={formRef}
           onSubmit={(e) => { e.preventDefault(); goNext() }}
           className="card"
           noValidate
@@ -122,6 +134,92 @@ export default function App() {
         <SiteFooter />
       </main>
     </div>
+  )
+}
+
+function HeroSection({ onGetStarted }) {
+  const { dispatch } = useForm()
+  const fileInputRef = useRef(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState(null)
+
+  async function handleHeroUpload(file) {
+    if (!file) return
+    setUploadError(null)
+    setUploading(true)
+    try {
+      const result = await extractFormDataFromFile(file, () => {})
+      if (result.ok) {
+        dispatch({ type: 'merge_data', data: result.data })
+        onGetStarted()
+      } else {
+        setUploadError(result.reason)
+      }
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <section className="text-center pt-2 pb-10 sm:pb-14">
+      <h2 className="text-3xl sm:text-4xl font-bold text-navy-800 tracking-tight leading-tight">
+        Your medical info, ready when it matters.
+      </h2>
+      <p className="mt-4 text-lg text-ink-soft max-w-lg mx-auto leading-relaxed">
+        A HAM sheet is a one-page emergency summary — allergies, medications,
+        DNR status, and contacts — that paramedics can read in seconds.
+        Takes about five minutes to fill out.
+      </p>
+
+      <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={onGetStarted}
+          className="btn-primary px-8 py-4 text-xl w-full sm:w-auto"
+        >
+          Create my HAM sheet →
+        </button>
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          className="btn-secondary w-full sm:w-auto"
+        >
+          {uploading ? 'Reading…' : 'Upload existing PDF'}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*,application/pdf,.pdf"
+          className="sr-only"
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) handleHeroUpload(f)
+            e.target.value = ''
+          }}
+        />
+      </div>
+
+      {uploadError && (
+        <p className="mt-4 text-base text-alert-700 max-w-md mx-auto leading-snug">
+          {uploadError}
+        </p>
+      )}
+
+      <p className="mt-6 text-sm text-ink-muted flex items-center justify-center gap-1.5">
+        <LockIcon />
+        Runs entirely in your browser — no server, no tracking
+      </p>
+    </section>
+  )
+}
+
+function LockIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
   )
 }
 
