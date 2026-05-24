@@ -107,6 +107,8 @@ function normalizeBlood(s) {
   if (!s) return ''
   const cleaned = s.replace(/\s+/g, '').toUpperCase()
   if (/^(A|B|AB|O)[+-]$/.test(cleaned)) return cleaned
+  // Accept without sign — sign can be lost when PDF columns run together
+  if (/^(A|B|AB|O)$/.test(cleaned)) return cleaned
   if (cleaned === 'UNKNOWN') return 'Unknown'
   return ''
 }
@@ -120,6 +122,7 @@ function normalizeBlood(s) {
 const ROW_LABEL_BOUNDARIES = [
   'DNR\\s+Status', 'DNR',
   'Blood\\s+Type', 'Blood\\s+Thinners\\??',
+  'Known\\s+Allergies',
   'Preferred\\s+Hospital',
   'Primary\\s+Care\\s+Physician', 'Primary\\s+Care', 'PCP',
   'Past\\/Current\\s+Conditions',
@@ -169,9 +172,12 @@ function parseCriticalSection(text) {
   const dnrM = text.match(/DNR(?:\s+Status)?\s*[:\-]?\s*(YES|NO|Y|N|Unknown)\b/i)
   if (dnrM) out.dnr = normalizeYN(dnrM[1])
 
-  // NB: don't use \b after the value — "+" and "-" aren't word characters,
-  // so \b fails to match against trailing whitespace. Use a positive lookahead.
-  const bloodM = text.match(/Blood\s+Type\s*[:\-]?\s*(AB\s*[+-]|A\s*[+-]|B\s*[+-]|O\s*[+-]|Unknown)(?=\s|$|[.,;])/i)
+  // Try with sign first; fall back without it — Chrome-printed PDFs sometimes
+  // lose the trailing dash when two columns are adjacent ("B-Preferred Hospital").
+  let bloodM = text.match(/Blood\s+Type\s*[:\-]?\s*(AB\s*[+-]|A\s*[+-]|B\s*[+-]|O\s*[+-]|Unknown)(?=\s|$|[.,;])/i)
+  if (!bloodM) {
+    bloodM = text.match(/Blood\s+Type\s*[:\-]?\s*(AB|A|B|O)(?=\s|$|[.,;]|[A-Z])/i)
+  }
   if (bloodM) out.bloodType = normalizeBlood(bloodM[1])
 
   const hospitalM = text.match(new RegExp(`Preferred\\s+Hospital\\s*[:\\-]?\\s*(.+?)${BOUNDARY_LOOKAHEAD}`, 'i'))
@@ -184,6 +190,10 @@ function parseCriticalSection(text) {
   // by surfacing it for the caller to fold into additionalInfo.
   const thinM = text.match(/Blood\s+Thinners\??\s*[:\-]?\s*(YES|NO|Y|N|Unknown)\b/i)
   if (thinM) out._bloodThinners = normalizeYN(thinM[1])
+
+  // Known Allergies — our own sheet embeds allergies inside the CRITICAL block.
+  const knownAllerM = text.match(new RegExp(`Known\\s+Allergies\\s*[:\\-]?\\s*(.+?)${BOUNDARY_LOOKAHEAD}`, 'i'))
+  if (knownAllerM) out.allergies = knownAllerM[1].trim()
 
   return out
 }
@@ -229,10 +239,16 @@ const CONTACT_HEADS = [
   'EMERGENCY CONTACTS',
   'CONTACTS & NOTES',
 ]
-const END_HEADS = ['QR CODES', 'QR CODE', '--- QR', '— QR', 'SCAN FOR OFFLINE']
+const END_HEADS = ['QR CODES', 'QR CODE', '--- QR', '— QR', 'SCAN FOR OFFLINE', 'SCANNABLE EMERGENCY DATA']
 
 export function parseHamPdfText(rawText) {
-  const text = normalizeText(rawText)
+  let text = normalizeText(rawText)
+
+  // Our own app's sheet has a subtitle "HISTORY · ALLERGIES · MEDICATIONS" that
+  // appears before the actual section headers. Strip it so the section detector
+  // doesn't treat those words as real section anchors.
+  text = text.replace(/HISTORY\s*·\s*ALLERGIES\s*·\s*MEDICATIONS\b/gi, '')
+
   const data = {}
 
   // 1. Patient header — everything before the first section header.
@@ -257,12 +273,26 @@ export function parseHamPdfText(rawText) {
     }
   }
 
-  // 3. History
+  // 3. History (+ PCP — our sheet combines them under one section header)
   const history = sectionContent(text, HISTORY_HEADS, [
     ...ALLERGY_HEADS, ...MED_HEADS, ...CONTACT_HEADS, ...END_HEADS,
   ])
   if (history) {
-    data.history = stripLeadingLabel(history, [
+    // Our sheet uses "MEDICAL HISTORY & PRIMARY CARE PHYSICIAN" as the header,
+    // so the section content starts with "& PRIMARY CARE PHYSICIAN". Strip that
+    // header suffix before parsing further.
+    const histBody = history.replace(/^&?\s*PRIMARY\s+CARE\s+PHYSICIAN\b\s*/i, '').trim()
+
+    // If PCP hasn't been found yet (it's not in our CRITICAL block), extract it
+    // from the start of this section. The PCP line precedes the conditions list.
+    if (!data.pcp) {
+      const pcpM2 = histBody.match(new RegExp(
+        `(?:PCP|Primary\\s+Care\\s*(?:Physician)?)\\s*[:\\-]?\\s*(.+?)${BOUNDARY_LOOKAHEAD}`, 'i'))
+      if (pcpM2) data.pcp = pcpM2[1].trim()
+    }
+
+    data.history = stripLeadingLabel(histBody, [
+      'PCP', 'Primary Care Physician', 'Primary Care',
       'Past/Current Conditions',
       'Conditions',
       'Medical History',
@@ -270,12 +300,19 @@ export function parseHamPdfText(rawText) {
     ])
   }
 
-  // 4. Allergies
-  const allergies = sectionContent(text, ALLERGY_HEADS, [
-    ...MED_HEADS, ...CONTACT_HEADS, ...END_HEADS,
-  ])
-  if (allergies) {
-    data.allergies = stripLeadingLabel(allergies, ['Allergies'])
+  // 4. Allergies (standalone section — third-party sheets)
+  // Don't overwrite allergies already found in the CRITICAL block.
+  if (!data.allergies) {
+    const allergies = sectionContent(text, ALLERGY_HEADS, [
+      ...MED_HEADS, ...CONTACT_HEADS, ...END_HEADS,
+    ])
+    if (allergies) {
+      const stripped = stripLeadingLabel(allergies, ['Allergies'])
+      // Skip if the result is only separator characters (subtitle extraction artifact)
+      if (stripped && !/^[·\-–—*\s]+$/.test(stripped)) {
+        data.allergies = stripped
+      }
+    }
   }
 
   // 5. Medications
@@ -324,9 +361,11 @@ export function parseHamPdfText(rawText) {
     }
   }
 
-  // Strip empties so we don't overwrite existing form values with blanks.
+  // Strip empties and separator-only artifacts (e.g. "·" from subtitle collisions).
   for (const k of Object.keys(data)) {
     if (data[k] == null || (typeof data[k] === 'string' && data[k].trim() === '')) {
+      delete data[k]
+    } else if (typeof data[k] === 'string' && /^[·\-–—*\s]+$/.test(data[k])) {
       delete data[k]
     }
   }
