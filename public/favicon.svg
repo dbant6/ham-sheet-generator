@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <!-- Background -->
-  <rect width="32" height="32" rx="8" fill="#1e3a5f"/>
+  <!-- Shield body — alert red -->
+  <path d="M16 2L3 7.5V16c0 7.8 5.2 13.5 13 15.2C23.8 29.5 29 23.8 29 16V7.5L16 2z" fill="#d94343"/>
   <!-- Subtle inner highlight -->
-  <rect x="1" y="1" width="30" height="30" rx="7" stroke="white" stroke-opacity="0.12" stroke-width="1"/>
-  <!-- Medical cross — vertical bar -->
-  <rect x="13.5" y="6" width="5" height="20" rx="2.5" fill="white"/>
-  <!-- Medical cross — horizontal bar -->
-  <rect x="6" y="13.5" width="20" height="5" rx="2.5" fill="white"/>
+  <path d="M16 5L6 9.5V16c0 6.6 4.4 11.5 10 13.1C21.6 27.5 26 22.6 26 16V9.5L16 5z" stroke="white" stroke-opacity="0.15" stroke-width="1" fill="none"/>
+  <!-- Medical cross — vertical -->
+  <rect x="13.5" y="9.5" width="5" height="13" rx="2.5" fill="white"/>
+  <!-- Medical cross — horizontal -->
+  <rect x="9.5" y="13.5" width="13" height="5" rx="2.5" fill="white"/>
 </svg>
