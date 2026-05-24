@@ -128,16 +128,48 @@ export default function App() {
 function SiteHeader() {
   return (
     <header className="border-b border-paper-edge bg-paper-card/70 backdrop-blur supports-[backdrop-filter]:bg-paper-card/60">
-      <div className="mx-auto max-w-3xl px-5 sm:px-8 py-5 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-alert-500 text-white grid place-items-center font-black text-lg shadow-card">
-          +
-        </div>
+      <div className="mx-auto max-w-3xl px-5 sm:px-8 py-4 flex items-center gap-4">
+        <HamLogo className="w-11 h-11 flex-none drop-shadow-sm" />
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight text-navy-800">HAM Sheet</h1>
-          <p className="text-sm text-ink-muted -mt-0.5">Emergency medical info for first responders</p>
+          <h1 className="text-2xl font-bold tracking-tight text-navy-800 leading-none">
+            HAM Sheet
+          </h1>
+          <p className="text-sm text-ink-muted mt-1 tracking-wide">
+            History · Allergies · Medications
+          </p>
         </div>
       </div>
     </header>
+  )
+}
+
+function HamLogo({ className = '' }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 44 44"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Shield body */}
+      <path
+        d="M22 3L5 10.5V22c0 10.77 7.2 18.64 17 21 9.8-2.36 17-10.23 17-21V10.5L22 3z"
+        fill="#1e3a5f"
+      />
+      {/* Subtle inner highlight along shield edge */}
+      <path
+        d="M22 6.5L8 13V22c0 9.2 6.1 16.1 14 18.4C29.9 38.1 36 31.2 36 22V13L22 6.5z"
+        stroke="white"
+        strokeOpacity="0.1"
+        strokeWidth="1"
+        fill="none"
+      />
+      {/* Medical cross — vertical */}
+      <rect x="19" y="13" width="6" height="18" rx="3" fill="white" />
+      {/* Medical cross — horizontal */}
+      <rect x="13" y="19" width="18" height="6" rx="3" fill="white" />
+    </svg>
   )
 }
 
@@ -146,7 +178,7 @@ function SiteFooter() {
     <footer className="mt-12 text-sm text-ink-muted text-center leading-relaxed">
       <p>
         Built to run offline. View source on{' '}
-        <a className="underline underline-offset-4 hover:text-navy-700" href="https://github.com">GitHub</a>.
+        <a className="underline underline-offset-4 hover:text-navy-700" href="https://github.com/dbant6/ham-sheet-generator">GitHub</a>.
       </p>
       <p className="mt-1">
         This tool does not provide medical advice. Always verify your sheet with a clinician.
