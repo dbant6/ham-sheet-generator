@@ -4,7 +4,7 @@
 
 Generate a print-ready 8.5×11" PDF that paramedics can read at a glance. Takes under five minutes to fill out. Works completely offline — your medical data never leaves your device.
 
-**Live app:** [dbant6.github.io/ham-sheet-generator](https://dbant6.github.io/ham-sheet-generator)
+**Live app:** [hamsheet.org](https://hamsheet.org/)
 
 ---
 
