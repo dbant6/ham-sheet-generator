@@ -176,7 +176,7 @@
   background: #fdf2f0;
   border: 2px solid #bf3232;
   border-radius: 8px;
-  padding: 10px 12px 14px;
+  padding: 10px 12px 18px;
   margin-bottom: 0.5rem;
   position: relative;
 }
@@ -194,7 +194,7 @@
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  margin-bottom: 9px;
+  margin-bottom: 14px;
 }
 .ham-sheet .hs-critical-grid {
   display: grid;
@@ -216,7 +216,7 @@
 .ham-sheet .hs-section {
   margin-top: 0.45rem;
   border-radius: 0 8px 8px 0;
-  padding: 8px 12px 13px;
+  padding: 8px 12px 20px;
   border-left: 5px solid var(--accent, #1e3a5f);
   background: var(--accent-tint, #f1f5fa);
 }
@@ -227,8 +227,8 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   border-bottom: 1.5px solid var(--accent-line, #c9d6e6);
-  padding-bottom: 3px;
-  margin-bottom: 8px;
+  padding-bottom: 4px;
+  margin-bottom: 16px;
   display: flex;
   align-items: baseline;
   gap: 6px;
