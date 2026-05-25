@@ -46,8 +46,9 @@ export async function downloadPdf(node, filename = 'ham-sheet.pdf', formData = n
       useCORS: true,
       backgroundColor: '#ffffff',
       logging: false,
-      windowWidth: node.scrollWidth,
-      windowHeight: node.scrollHeight,
+      // Do not override windowWidth/windowHeight — letting html2canvas measure
+      // the node naturally prevents the blank-first-page artifact that occurs
+      // when the captured dimensions don't align with jsPDF's letter layout.
     },
     jsPDF: {
       unit: 'in',
@@ -55,7 +56,9 @@ export async function downloadPdf(node, filename = 'ham-sheet.pdf', formData = n
       orientation: 'portrait',
       compress: true,
     },
-    pagebreak: { mode: ['avoid-all', 'css'] },
+    // 'avoid-all' can push the entire content off page 1, producing a blank
+    // first page. The sheet is single-page by design so no mode is needed.
+    pagebreak: { mode: 'css' },
   }
 
   // Chain through html2pdf so we get access to the jsPDF instance before save.
