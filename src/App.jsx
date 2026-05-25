@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from './state/FormContext.jsx'
 import { extractFormDataFromFile } from './utils/extract.js'
 import { STEPS, validateStep } from './utils/validation.js'
@@ -63,12 +63,26 @@ export default function App() {
     }
   }
 
-  function reset() {
-    if (confirm('Clear all entered information? This cannot be undone.')) {
+  const [confirmingReset, setConfirmingReset] = useState(false)
+  const resetTimerRef = useRef(null)
+
+  const handleReset = useCallback(() => {
+    if (confirmingReset) {
+      clearTimeout(resetTimerRef.current)
+      setConfirmingReset(false)
       dispatch({ type: 'reset' })
       window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      setConfirmingReset(true)
+      resetTimerRef.current = setTimeout(() => setConfirmingReset(false), 4000)
     }
-  }
+  }, [confirmingReset, dispatch])
+
+  // Cancel pending confirm if user navigates away
+  useEffect(() => {
+    setConfirmingReset(false)
+    clearTimeout(resetTimerRef.current)
+  }, [step])
 
   function togglePersist(v) {
     dispatch({ type: 'set_persist', value: v })
@@ -99,7 +113,8 @@ export default function App() {
         <PrivacyBanner
           persist={persist}
           onTogglePersist={togglePersist}
-          onReset={reset}
+          onReset={handleReset}
+          confirmingReset={confirmingReset}
           compact={step === 0}
         />
 
@@ -137,10 +152,10 @@ export default function App() {
               </button>
               <button
                 type="button"
-                onClick={reset}
-                className="btn-danger-ghost"
+                onClick={handleReset}
+                className={confirmingReset ? 'btn-danger-ghost ring-2 ring-alert-500 ring-offset-1' : 'btn-danger-ghost'}
               >
-                Clear &amp; start over
+                {confirmingReset ? 'Tap again to confirm' : 'Clear & start over'}
               </button>
             </div>
           )}

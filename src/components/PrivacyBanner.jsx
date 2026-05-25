@@ -6,7 +6,7 @@
  * compact=false — full card with explanation; shown on all other steps where
  *                 the hero isn't present and the banner is the first thing seen.
  */
-export default function PrivacyBanner({ persist, onTogglePersist, onReset, compact = false }) {
+export default function PrivacyBanner({ persist, onTogglePersist, onReset, confirmingReset = false, compact = false }) {
   if (compact) {
     return (
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-7 px-1 text-sm text-ink-muted">
@@ -25,7 +25,7 @@ export default function PrivacyBanner({ persist, onTogglePersist, onReset, compa
             onClick={onReset}
             className="text-alert-700 underline underline-offset-4 hover:text-alert-600 font-medium"
           >
-            Clear everything
+            {confirmingReset ? 'Tap again to confirm' : 'Clear everything'}
           </button>
         )}
       </div>
@@ -68,7 +68,7 @@ export default function PrivacyBanner({ persist, onTogglePersist, onReset, compa
                 onClick={onReset}
                 className="text-base font-medium text-alert-700 underline underline-offset-4 hover:text-alert-600"
               >
-                Clear everything
+                {confirmingReset ? 'Tap again to confirm' : 'Clear everything'}
               </button>
             )}
           </div>
