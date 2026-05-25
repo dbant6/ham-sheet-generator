@@ -84,6 +84,16 @@
   }
 }
 
+/* Step transition — fires on mount via key={step} remount in App.jsx.
+   prefers-reduced-motion collapses duration to 0.01ms via the base rule above. */
+@keyframes stepFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+.step-fade {
+  animation: stepFadeIn 160ms ease forwards;
+}
+
 /* On true narrow screens (≤380px), tighten outer paddings and the alert padding */
 @media (max-width: 380px) {
   .card {

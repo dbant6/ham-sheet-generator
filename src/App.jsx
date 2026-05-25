@@ -127,7 +127,9 @@ export default function App() {
           style={{ borderLeftColor: theme.border, borderLeftWidth: '5px' }}
           noValidate
         >
-          <StepComponent data={data} errors={errors} set={set} onJump={jumpTo} />
+          <div key={step} className="step-fade">
+            <StepComponent data={data} errors={errors} set={set} onJump={jumpTo} />
+          </div>
 
           {!isLastStep && (
             <div className="mt-8 sm:mt-10 pt-6 sm:pt-7 border-t border-paper-edge flex items-center justify-between gap-3">
