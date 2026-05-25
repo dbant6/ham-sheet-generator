@@ -105,12 +105,14 @@ function SummaryRow({ label, value, isDob }) {
 export default function StepReview({ data, errors, set, onJump }) {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
+  const [saved, setSaved] = useState(false)
   const printRef = useRef(null)
   const { containerRef, scale } = useResponsiveScale(0.85)
 
   const print = useReactToPrint({
     content: () => printRef.current,
     documentTitle: suggestFilename(data.fullName).replace(/\.pdf$/, ''),
+    onAfterPrint: () => setSaved(true),
   })
 
   async function handleDownload() {
@@ -121,6 +123,7 @@ export default function StepReview({ data, errors, set, onJump }) {
       // that's how a re-uploaded copy of this sheet pre-fills the form
       // perfectly, even though the page itself is rasterized.
       await downloadPdf(printRef.current, suggestFilename(data.fullName), data)
+      setSaved(true)
     } catch (e) {
       console.error(e)
       setErr('Sorry, something went wrong generating the PDF. You can use the Print button to save as PDF instead.')
@@ -193,6 +196,42 @@ export default function StepReview({ data, errors, set, onJump }) {
           </div>
           {err && (
             <p className="text-alert-700 font-medium text-base">{err}</p>
+          )}
+
+          {/* Post-save guidance — shown after first download or print */}
+          {saved && (
+            <div className="rounded-xl border border-ok-500/30 bg-ok-500/[0.06] p-5 sm:p-6">
+              <div className="flex gap-3 items-start">
+                <span className="text-2xl flex-shrink-0" aria-hidden="true">✅</span>
+                <div>
+                  <h3 className="text-lg font-bold text-ink leading-tight">Your sheet is saved — here's what to do next</h3>
+                  <p className="text-base text-ink-soft mt-1 mb-4 leading-relaxed">
+                    The sheet only helps if it's somewhere paramedics can find it. Here are the most effective places to put it:
+                  </p>
+                  <ul className="space-y-2.5 text-base text-ink-soft">
+                    <li className="flex gap-2.5">
+                      <span aria-hidden="true">📌</span>
+                      <span><strong className="text-ink">Print and post on the fridge.</strong> The inside of the front door or the fridge door is the first place paramedics look.</span>
+                    </li>
+                    <li className="flex gap-2.5">
+                      <span aria-hidden="true">👜</span>
+                      <span><strong className="text-ink">Fold a copy in your wallet or purse.</strong> Useful if you're away from home when help is needed.</span>
+                    </li>
+                    <li className="flex gap-2.5">
+                      <span aria-hidden="true">📱</span>
+                      <span><strong className="text-ink">Email a copy to your emergency contacts.</strong> So they have it too and can share it with medical staff.</span>
+                    </li>
+                    <li className="flex gap-2.5">
+                      <span aria-hidden="true">🏥</span>
+                      <span><strong className="text-ink">Bring a copy to your next doctor's appointment.</strong> Your PCP can verify the medications and history are current.</span>
+                    </li>
+                  </ul>
+                  <p className="mt-4 text-sm text-ink-muted">
+                    Update this sheet once a year, or after any new diagnosis, medication change, or surgery.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Live preview — scales fluidly from phone to desktop */}
