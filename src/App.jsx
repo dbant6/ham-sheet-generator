@@ -101,7 +101,7 @@ export default function App() {
       <SiteHeader />
 
       {step === 0 && (
-        <div className="bg-paper-card border-b border-paper-edge">
+        <div className="bg-gradient-to-b from-navy-50/50 to-paper-card border-b border-paper-edge">
           <div className="mx-auto w-full max-w-3xl px-4 sm:px-8">
             <HeroSection onGetStarted={scrollToForm} />
           </div>
