@@ -115,7 +115,7 @@ export default function App() {
           onTogglePersist={togglePersist}
           onReset={handleReset}
           confirmingReset={confirmingReset}
-          compact={step === 0}
+          compact={step !== 1}
         />
 
         <Stepper current={step} onJump={jumpTo} />
