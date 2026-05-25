@@ -176,7 +176,7 @@
   background: #fdf2f0;
   border: 2px solid #bf3232;
   border-radius: 8px;
-  padding: 9px 11px 14px;
+  padding: 10px 12px 15px;
   margin-bottom: 0.4rem;
   position: relative;
 }
@@ -194,7 +194,7 @@
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 9px;
 }
 .ham-sheet .hs-critical-grid {
   display: grid;
@@ -214,9 +214,9 @@
 
 /* ----- GENERIC SECTION shell ---------------------------------------------- */
 .ham-sheet .hs-section {
-  margin-top: 0.35rem;
+  margin-top: 0.4rem;
   border-radius: 0 8px 8px 0;
-  padding: 6px 10px 12px;
+  padding: 7px 11px 15px;
   border-left: 5px solid var(--accent, #1e3a5f);
   background: var(--accent-tint, #f1f5fa);
 }
@@ -226,29 +226,26 @@
   color: var(--accent-ink, #1e3a5f);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  /* Underline lives on ::after so margin-bottom below it is reliable */
-  position: relative;
-  padding-bottom: 6px;
-  margin-bottom: 0;
+  margin-bottom: 6px;
   display: flex;
   align-items: baseline;
   gap: 6px;
 }
-/* Decoupled underline — gap to body text is now margin-top on .hs-body */
-.ham-sheet .hs-section h2::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1.5px;
-  background: var(--accent-line, #c9d6e6);
-}
 .ham-sheet .hs-section h2 .hs-emoji {
   font-size: 12pt;
 }
+/* Real DOM divider — html2canvas renders actual elements reliably,
+   unlike ::after pseudo-elements inside flex containers. Hardcoded
+   colors avoid CSS-variable resolution issues in the canvas capture. */
+.ham-sheet .hs-section-line {
+  height: 1.5px;
+  background: #c9d6e6;
+  margin-bottom: 10px;
+}
+.ham-sheet .hs-section.is-meds     .hs-section-line { background: #d8c5e6; }
+.ham-sheet .hs-section.is-history  .hs-section-line { background: #bcdcd6; }
+.ham-sheet .hs-section.is-contacts .hs-section-line { background: #e6d2ad; }
 .ham-sheet .hs-section .hs-body {
-  margin-top: 12px;
   white-space: pre-wrap;
   word-break: break-word;
   font-size: 10.5pt;

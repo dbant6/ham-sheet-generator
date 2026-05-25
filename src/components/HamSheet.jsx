@@ -91,12 +91,14 @@ const HamSheet = forwardRef(function HamSheet({ data }, ref) {
       {/* Medications (violet accent) */}
       <section className="hs-section is-meds" aria-label="Current medications">
         <h2><span className="hs-emoji" aria-hidden="true">💊</span> Current Medications</h2>
+        <div className="hs-section-line" aria-hidden="true" />
         <div className="hs-body">{data.medications || 'None'}</div>
       </section>
 
       {/* History + PCP (teal accent) */}
       <section className="hs-section is-history" aria-label="Medical history and primary care physician">
         <h2><span className="hs-emoji" aria-hidden="true">📋</span> Medical History &amp; Primary Care Physician</h2>
+        <div className="hs-section-line" aria-hidden="true" />
         <div className="hs-body">
           <div style={{ marginBottom: 4 }}>
             <strong>PCP:</strong> {data.pcp || '—'}
@@ -108,6 +110,7 @@ const HamSheet = forwardRef(function HamSheet({ data }, ref) {
       {/* Emergency Contacts + Additional notes (amber accent) */}
       <section className="hs-section is-contacts" aria-label="Emergency contacts and notes">
         <h2><span className="hs-emoji" aria-hidden="true">📞</span> Emergency Contacts &amp; Notes</h2>
+        <div className="hs-section-line" aria-hidden="true" />
         <div className="hs-body">
           {data.emergencyContacts || '—'}
           {data.additionalInfo && (
